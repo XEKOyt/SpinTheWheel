@@ -1,0 +1,184 @@
+/* Basic styles for the page */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom right, #1E90FF, #87CEFA);
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    background: linear-gradient(135deg, #9b59b6, #3498db);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.control-panel {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+}
+
+.control-panel h1 {
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.input-container {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#item-input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    width: 70%;
+    margin-right: 10px;
+}
+
+#add-item {
+    padding: 10px 15px;
+    font-size: 1rem;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#add-item:hover {
+    background-color: #3498db;
+}
+
+.item-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    color: white;
+}
+
+.item-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.item-list button {
+    background-color: #c0392b;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.item-list button:hover {
+    background-color: #e74c3c;
+}
+
+input[type="color"] {
+    margin-right: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+#spin-button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 50%;
+    align-self: center;
+}
+
+#spin-button:hover {
+    background-color: #3498db;
+}
+
+.wheel-container {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+canvas {
+    width: 400px;
+    height: 400px;
+}
+
+.arrow {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg);
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 40px solid #000000;
+}
+
+/* Modal for winner */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal.show {
+    display: block;
+}
+
+.modal h2 {
+    font-size: 2rem;
+    color: #2980b9;
+    margin-bottom: 10px;
+}
+
+.modal p {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.modal button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal button:hover {
+    background-color: #2980b9;
+}
