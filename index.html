@@ -4,10 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spin the Wheel</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="light-mode">
     <div class="container">
+        <!-- Light/Dark Mode Switch -->
+        <label class="switch">
+            <input type="checkbox" id="mode-toggle">
+            <span class="slider"></span>
+        </label>
+
         <!-- Left Control Panel -->
         <div class="control-panel">
             <h1>Spin the Wheel!</h1>
@@ -15,6 +22,12 @@
                 <input type="text" id="item-input" placeholder="Enter a word">
                 <button id="add-item" class="btn">Add to Wheel</button>
             </div>
+
+            <!-- Speed Control -->
+            <div class="input-container">
+                <input type="number" id="speed-input" placeholder="Speed" value="1" step="0.1" min="0.1">
+            </div>
+
             <ul id="item-list" class="item-list"></ul>
             <button id="spin-button" class="btn">SPIN</button>
         </div>
@@ -27,7 +40,11 @@
     </div>
 
     <!-- Modal for Winner -->
-    <div class="modal"></div>
+    <div class="modal">
+        <h2>Congratulations!</h2>
+        <p id="winner-text"></p>
+        <button id="close-modal">Close</button>
+    </div>
 
     <script src="script.js"></script>
 </body>
