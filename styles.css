@@ -6,7 +6,17 @@ body {
     height: 100vh;
     margin: 0;
     font-family: 'Poppins', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.light-mode {
     background: linear-gradient(to bottom right, #1E90FF, #87CEFA);
+    color: #2c3e50;
+}
+
+body.dark-mode {
+    background: linear-gradient(to bottom right, #2c3e50, #34495e);
+    color: white;
 }
 
 .container {
@@ -15,10 +25,64 @@ body {
     align-items: center;
     width: 90%;
     max-width: 1200px;
-    background: linear-gradient(135deg, #9b59b6, #3498db);
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    position: relative; /* Added for positioning the switch */
+    transition: background 0.3s;
+}
+
+.container.dark-mode {
+    background: rgba(45, 45, 45, 0.9);
+}
+
+.switch {
+    position: absolute; /* Change to absolute for top-left positioning */
+    top: 10px;
+    left: 10px;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    margin-bottom: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 50px;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50px;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #3498db;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
 }
 
 .control-panel {
@@ -29,9 +93,7 @@ body {
 
 .control-panel h1 {
     font-size: 2.5rem;
-    color: white;
     margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .input-container {
@@ -39,35 +101,41 @@ body {
     margin-bottom: 20px;
 }
 
-#item-input {
+#item-input, #speed-input {
     padding: 10px;
     font-size: 1rem;
     border: 2px solid #3498db;
     border-radius: 5px;
     width: 70%;
     margin-right: 10px;
+    transition: border-color 0.3s;
 }
 
-#add-item {
+#item-input:focus, #speed-input:focus {
+    border-color: #2980b9;
+}
+
+#add-item, #spin-button {
     padding: 10px 15px;
     font-size: 1rem;
-    background-color: #2980b9;
+    background-color: #3498db;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    width: 100%;
 }
 
-#add-item:hover {
-    background-color: #3498db;
+#add-item:hover, #spin-button:hover {
+    background-color: #2980b9;
 }
 
 .item-list {
     list-style: none;
     padding: 0;
     margin: 20px 0;
-    color: white;
+    color: #2c3e50;
 }
 
 .item-list li {
@@ -93,29 +161,6 @@ body {
     background-color: #e74c3c;
 }
 
-input[type="color"] {
-    margin-right: 10px;
-    border: none;
-    cursor: pointer;
-}
-
-#spin-button {
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    background-color: #2980b9;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 50%;
-    align-self: center;
-}
-
-#spin-button:hover {
-    background-color: #3498db;
-}
-
 .wheel-container {
     width: 50%;
     display: flex;
@@ -126,6 +171,9 @@ input[type="color"] {
 canvas {
     width: 400px;
     height: 400px;
+    border: 10px solid #3498db;
+    border-radius: 50%;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
 
 .arrow {
@@ -151,10 +199,17 @@ canvas {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .modal.show {
     display: block;
+}
+
+.modal.dark-mode {
+    background-color: #444;
+    color: white;
 }
 
 .modal h2 {
@@ -181,4 +236,9 @@ canvas {
 
 .modal button:hover {
     background-color: #2980b9;
+}
+
+.logo{
+    position: fixed;
+    
 }
