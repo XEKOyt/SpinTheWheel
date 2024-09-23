@@ -20,7 +20,6 @@ let spinAngleStart = 0;
 let spinTime = 0;
 let spinTimeTotal = 0;
 
-// Random color generator
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -30,7 +29,6 @@ function getRandomColor() {
     return color;
 }
 
-// Draw the wheel segments
 function drawWheel() {
     const wheelRadius = canvas.width / 2;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -44,10 +42,8 @@ function drawWheel() {
         ctx.fill();
         ctx.stroke();
 
-        // Adjust font size based on text length
         const fontSize = Math.min(40, Math.max(20, 300 / item.length));
         
-        // Draw text inside the segments
         ctx.save();
         ctx.fillStyle = "black";
         ctx.font = `bold ${fontSize}px Arial`;
@@ -61,11 +57,10 @@ function drawWheel() {
     });
 }
 
-// Rotate the wheel on spin
-let lastIndex = -1; // Keep track of the last index the arrow was on
+let lastIndex = -1;
 
 function rotateWheel() {
-    spinAngleStart *= 0.98; // Slow down gradually
+    spinAngleStart *= 0.98; 
     startAngle += spinAngleStart;
     drawWheel();
 
@@ -74,11 +69,10 @@ function rotateWheel() {
     const degrees = startAngle * 180 / Math.PI + 90;
     const index = Math.floor((360 - degrees % 360) / (360 / items.length));
 
-    // Play sound if the arrow moves to a new segment
     if (index !== lastIndex) {
-        spinSound.currentTime = 0; // Reset the sound to the beginning
-        spinSound.play(); // Play the sound for each segment change
-        lastIndex = index; // Update the lastIndex to the current index
+        spinSound.currentTime = 0;
+        spinSound.play();
+        lastIndex = index; 
     }
 
     if (spinTime < spinTimeTotal) {
@@ -88,59 +82,50 @@ function rotateWheel() {
     }
 }
 
-
-// Start the spin
 function startSpin() {
-    const speed = parseFloat(speedInput.value) || 1; // Get the speed from the input
+    const speed = parseFloat(speedInput.value) || 1; 
+    
+    spinAngleStart = (Math.random() * 3 + 1) * speed; 
 
-    // Set an extreme range for the initial spin speed
-    spinAngleStart = (Math.random() * 3 + 1) * speed; // Range from 1 to 4 times the speed
-
-    // Randomize spin duration with a more reasonable range
     spinTime = 0;
-    spinTimeTotal = (Math.random() * 3000 + 4000) / speed; // Random duration between 4000 ms and 7000 ms divided by speed
+    spinTimeTotal = (Math.random() * 3000 + 4000) / speed; 
 
-    spinSound.currentTime = 0; // Reset spin sound to start
-    spinSound.play(); // Play spin sound
+    spinSound.currentTime = 0; 
+    spinSound.play();
     rotateWheel();
 }
 
-// Add new items to the wheel
 function addItem() {
     const newItem = itemInput.value.trim();
     if (newItem) {
-        const randomColor = getRandomColor(); // Get a new random color for the item
+        const randomColor = getRandomColor(); 
         items.push(newItem);
-        colors.push(randomColor); // Store the random color
+        colors.push(randomColor); 
         itemInput.value = '';
         updateItemList();
-        arc = Math.PI / (items.length / 2); // Recalculate arc based on the number of items
+        arc = Math.PI / (items.length / 2); 
         drawWheel();
     }
 }
 
-// Change item color
 function changeItemColor(index, color) {
-    colors[index] = color; // Update color for the specified index
-    drawWheel(); // Redraw the wheel with the updated colors
+    colors[index] = color; 
+    drawWheel(); 
 }
 
-// Remove an item from the wheel
 function removeItem(index) {
-    items.splice(index, 1); // Remove the item from the array
-    colors.splice(index, 1); // Remove the corresponding color
-    updateItemList(); // Update the displayed item list
-    arc = Math.PI / (items.length / 2); // Recalculate arc for the wheel
-    drawWheel(); // Redraw the wheel
+    items.splice(index, 1);
+    colors.splice(index, 1); 
+    updateItemList(); 
+    arc = Math.PI / (items.length / 2); 
+    drawWheel(); 
 }
 
-// Update the displayed list of items
 function updateItemList() {
     itemList.innerHTML = '';
     items.forEach((item, index) => {
         const li = document.createElement('li');
 
-        // Create input to rename the item
         const renameInput = document.createElement('input');
         renameInput.type = 'text';
         renameInput.value = item;
@@ -153,7 +138,6 @@ function updateItemList() {
             }
         };
 
-        // Create a color picker to change the item color
         const colorPicker = document.createElement('input');
         colorPicker.type = 'color';
         colorPicker.value = colors[index];
@@ -161,47 +145,40 @@ function updateItemList() {
 
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'Remove';
-        removeBtn.onclick = () => removeItem(index); // Call removeItem
+        removeBtn.onclick = () => removeItem(index); 
 
         li.append(renameInput, colorPicker, removeBtn);
         itemList.appendChild(li);
     });
 }
 
-// Show the winner in a modal popup
 function showWinner(item) {
-    winSound.currentTime = 0; // Reset sound to start
-    winSound.play(); // Play win sound
+    winSound.currentTime = 0;
+    winSound.play(); 
 
-    // Update the modal with winner text
     document.getElementById('winner-text').innerHTML = `<strong>${item}</strong> is the <span style="color: green;">winner</span>!`;
 
-    modal.classList.add('show'); // Show the modal
-    spinSound.pause(); // Stop spin sound when winner is shown
+    modal.classList.add('show'); 
+    spinSound.pause(); 
 }
 
-// Close the modal
 document.getElementById('close-modal').addEventListener('click', () => {
     modal.classList.remove('show');
 });
 
-// Event listeners
 addItemButton.addEventListener('click', addItem);
 spinButton.addEventListener('click', startSpin);
 
-// Add item by pressing Enter key
 itemInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         addItem();
     }
 });
 
-// Dark/Light Mode Toggle
 modeToggle.addEventListener('change', () => {
     document.body.classList.toggle('dark-mode');
     document.querySelector('.container').classList.toggle('dark-mode');
     modal.classList.toggle('dark-mode');
 });
 
-// Initial drawing
 drawWheel();
