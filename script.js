@@ -1,13 +1,16 @@
+const winSound = new Audio('win.mp3'); // Sound for winner announcement
+const spinSound = new Audio('E.MP3'); // Sound for spinning
+
 const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
 const spinButton = document.getElementById('spin-button');
 const addItemButton = document.getElementById('add-item');
 const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
-const modal = document.createElement('div'); // Popup modal
+const modal = document.querySelector('.modal');
+const modeToggle = document.getElementById('mode-toggle');
 
-modal.classList.add('modal');
-document.body.appendChild(modal); // Add the modal to the body
+const speedInput = document.getElementById('speed-input'); // Speed input field
 
 let items = [];
 let colors = [];
@@ -28,7 +31,6 @@ function getRandomColor() {
 }
 
 // Draw the wheel segments
-// Draw the wheel segments
 function drawWheel() {
     const wheelRadius = canvas.width / 2;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -41,11 +43,14 @@ function drawWheel() {
         ctx.fillStyle = colors[i];
         ctx.fill();
         ctx.stroke();
+
+        // Adjust font size based on text length
+        const fontSize = Math.min(40, Math.max(20, 300 / item.length));
         
-        // Draw text inside the segments with larger font
+        // Draw text inside the segments
         ctx.save();
         ctx.fillStyle = "black";
-        ctx.font = 'bold 40px Arial';  // Adjust font size here
+        ctx.font = `bold ${fontSize}px Arial`;
         ctx.translate(
             wheelRadius + Math.cos(angle + arc / 2) * wheelRadius / 1.5,
             wheelRadius + Math.sin(angle + arc / 2) * wheelRadius / 1.5
@@ -56,28 +61,47 @@ function drawWheel() {
     });
 }
 
-
 // Rotate the wheel on spin
+let lastIndex = -1; // Keep track of the last index the arrow was on
+
 function rotateWheel() {
     spinAngleStart *= 0.98; // Slow down gradually
     startAngle += spinAngleStart;
     drawWheel();
-    
+
     spinTime += 10;
+
+    const degrees = startAngle * 180 / Math.PI + 90;
+    const index = Math.floor((360 - degrees % 360) / (360 / items.length));
+
+    // Play sound if the arrow moves to a new segment
+    if (index !== lastIndex) {
+        spinSound.currentTime = 0; // Reset the sound to the beginning
+        spinSound.play(); // Play the sound for each segment change
+        lastIndex = index; // Update the lastIndex to the current index
+    }
+
     if (spinTime < spinTimeTotal) {
         requestAnimationFrame(rotateWheel);
     } else {
-        const degrees = startAngle * 180 / Math.PI + 90;
-        const index = Math.floor((360 - degrees % 360) / (360 / items.length));
         showWinner(items[index]);
     }
 }
 
+
 // Start the spin
 function startSpin() {
-    spinAngleStart = Math.random() * 0.4 + 0.3; // Start fast, then slow down
+    const speed = parseFloat(speedInput.value) || 1; // Get the speed from the input
+
+    // Set an extreme range for the initial spin speed
+    spinAngleStart = (Math.random() * 3 + 1) * speed; // Range from 1 to 4 times the speed
+
+    // Randomize spin duration with a more reasonable range
     spinTime = 0;
-    spinTimeTotal = Math.random() * 3000 + 5000;
+    spinTimeTotal = (Math.random() * 3000 + 4000) / speed; // Random duration between 4000 ms and 7000 ms divided by speed
+
+    spinSound.currentTime = 0; // Reset spin sound to start
+    spinSound.play(); // Play spin sound
     rotateWheel();
 }
 
@@ -85,9 +109,9 @@ function startSpin() {
 function addItem() {
     const newItem = itemInput.value.trim();
     if (newItem) {
-        const randomColor = getRandomColor();
+        const randomColor = getRandomColor(); // Get a new random color for the item
         items.push(newItem);
-        colors.push(randomColor);
+        colors.push(randomColor); // Store the random color
         itemInput.value = '';
         updateItemList();
         arc = Math.PI / (items.length / 2); // Recalculate arc based on the number of items
@@ -95,19 +119,19 @@ function addItem() {
     }
 }
 
-// Remove an item from the list
-function removeItem(index) {
-    items.splice(index, 1);
-    colors.splice(index, 1);
-    updateItemList();
-    arc = Math.PI / (items.length / 2); // Update arc after removal
-    drawWheel();
+// Change item color
+function changeItemColor(index, color) {
+    colors[index] = color; // Update color for the specified index
+    drawWheel(); // Redraw the wheel with the updated colors
 }
 
-// Change color of an existing item
-function changeItemColor(index, newColor) {
-    colors[index] = newColor;
-    drawWheel();
+// Remove an item from the wheel
+function removeItem(index) {
+    items.splice(index, 1); // Remove the item from the array
+    colors.splice(index, 1); // Remove the corresponding color
+    updateItemList(); // Update the displayed item list
+    arc = Math.PI / (items.length / 2); // Recalculate arc for the wheel
+    drawWheel(); // Redraw the wheel
 }
 
 // Update the displayed list of items
@@ -115,48 +139,69 @@ function updateItemList() {
     itemList.innerHTML = '';
     items.forEach((item, index) => {
         const li = document.createElement('li');
+
+        // Create input to rename the item
+        const renameInput = document.createElement('input');
+        renameInput.type = 'text';
+        renameInput.value = item;
+        renameInput.onchange = (e) => {
+            if (e.target.value.trim() !== '') {
+                items[index] = e.target.value.trim();
+                drawWheel();
+            } else {
+                e.target.value = item;
+            }
+        };
+
+        // Create a color picker to change the item color
         const colorPicker = document.createElement('input');
         colorPicker.type = 'color';
         colorPicker.value = colors[index];
         colorPicker.oninput = (e) => changeItemColor(index, e.target.value);
 
-        li.textContent = item;
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'Remove';
-        removeBtn.onclick = () => removeItem(index);
+        removeBtn.onclick = () => removeItem(index); // Call removeItem
 
-        li.prepend(colorPicker); // Color picker (i hope ill learn how to make it smother cuz its kinda bad)
-        li.appendChild(removeBtn);
+        li.append(renameInput, colorPicker, removeBtn);
         itemList.appendChild(li);
     });
 }
 
-const sound = new Audio('win.mp3'); // Load your sound file
-
 // Show the winner in a modal popup
 function showWinner(item) {
-    // Play the winner sound
-    sound.currentTime = 0; // Reset sound to start
-    sound.play(); // Play sound
+    winSound.currentTime = 0; // Reset sound to start
+    winSound.play(); // Play win sound
 
-    modal.innerHTML = `
-    <div style="text-align: center;">
-        <h2>Congratulations!</h2>
-        <p style="color: black;"><strong>${item}</strong> is the <span style="color: green;">winner</span>!</p>
-        <button id="close-modal">Close</button>
-    </div>
-    `;
+    // Update the modal with winner text
+    document.getElementById('winner-text').innerHTML = `<strong>${item}</strong> is the <span style="color: green;">winner</span>!`;
 
-    modal.classList.add('show');
-
-    document.getElementById('close-modal').addEventListener('click', () => {
-        modal.classList.remove('show');
-    });
+    modal.classList.add('show'); // Show the modal
+    spinSound.pause(); // Stop spin sound when winner is shown
 }
 
+// Close the modal
+document.getElementById('close-modal').addEventListener('click', () => {
+    modal.classList.remove('show');
+});
 
 // Event listeners
 addItemButton.addEventListener('click', addItem);
 spinButton.addEventListener('click', startSpin);
 
+// Add item by pressing Enter key
+itemInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        addItem();
+    }
+});
+
+// Dark/Light Mode Toggle
+modeToggle.addEventListener('change', () => {
+    document.body.classList.toggle('dark-mode');
+    document.querySelector('.container').classList.toggle('dark-mode');
+    modal.classList.toggle('dark-mode');
+});
+
+// Initial drawing
 drawWheel();
